@@ -185,7 +185,7 @@ class EightSleepThermostat(ClimateEntity, RestoreEntity):
                     self._attr_max_temp,
                 )
                 return False
-            self._attr_target_temperature = self._convert_to_points(target_temp)
+            self._attr_target_temperature = target_temp
             hvac_mode = HVAC_MODE_AUTO
             self.async_schedule_update_ha_state()
 
@@ -199,7 +199,7 @@ class EightSleepThermostat(ClimateEntity, RestoreEntity):
         data = {
             ATTR_ENTITY_ID: self._eight_sleep_state_entity_id,
             ATTR_DURATION: 7200 if hvac_mode == HVAC_MODE_AUTO else 0,
-            ATTR_TARGET: self._attr_target_temperature,
+            ATTR_TARGET: self._convert_to_points(self._attr_target_temperature),
         }
         _LOGGER.debug("_async_update_climate: Set heat data=%s", data)
         await self.hass.services.async_call(
