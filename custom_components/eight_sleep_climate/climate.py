@@ -128,7 +128,7 @@ class EightSleepThermostat(ClimateEntity, RestoreEntity):
 
         state = self._get_eight_sleep_state()
         if state is not None:
-            return int(state.state)
+            return int(self._convert_to_degrees(state.state))
         return None
 
     @property
@@ -185,7 +185,7 @@ class EightSleepThermostat(ClimateEntity, RestoreEntity):
                     self._attr_max_temp,
                 )
                 return False
-            self._attr_target_temperature = target_temp
+            self._attr_target_temperature = self._convert_to_points(target_temp)
             hvac_mode = HVAC_MODE_AUTO
             self.async_schedule_update_ha_state()
 
@@ -214,10 +214,16 @@ class EightSleepThermostat(ClimateEntity, RestoreEntity):
         """Turn thermostat on."""
         await self.async_set_temperature(hvac_mode=HVAC_MODE_AUTO)
 
+    def _convert_to_degrees(self, points):
+        return round(0.173166 * points + 27.4256)
+    
+    def _convert_to_points(self, degrees):
+        return round(5.76645 * degrees - 158.138)
+    
     def _get_target_temp(self):
         state = self._get_eight_sleep_state()
         if state is not None:
-            return int(state.attributes.get(ATTR_TARGET_HEAT))
+            return int(self._convert_to_degrees(state.attributes.get(ATTR_TARGET_HEAT)))
         return None
 
     def _is_running(self, state=None):
