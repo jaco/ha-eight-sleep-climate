@@ -104,11 +104,11 @@ class EightSleepThermostat(ClimateEntity, RestoreEntity):
             old_state = await self.async_get_last_state()
             if old_state is not None:
                 if self._attr_target_temperature is None:
-                    self._attr_target_temperature = old_state.attributes.get(
+                    self._attr_target_temperature = self._convert_to_degrees(old_state.attributes.get(
                         ATTR_TARGET_TEMP
-                    )
+                    ))
             if self._attr_target_temperature is None:
-                self._attr_target_temperature = 10
+                self._attr_target_temperature = 20
 
         # Add listener
         async_track_state_change_event(
@@ -249,7 +249,7 @@ class EightSleepThermostat(ClimateEntity, RestoreEntity):
 
         is_running_new = self._is_running(new_state)
         if is_running_new:
-            target_temp = int(new_state.attributes.get(ATTR_TARGET_HEAT))
+            target_temp = self._convert_to_degrees(new_state.attributes.get(ATTR_TARGET_HEAT))
             if target_temp != self._attr_target_temperature:
                 self._attr_target_temperature = target_temp
                 self.async_schedule_update_ha_state()
