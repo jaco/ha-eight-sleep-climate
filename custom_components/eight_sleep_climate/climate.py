@@ -215,6 +215,7 @@ class EightSleepThermostat(ClimateEntity, RestoreEntity):
         await self.async_set_temperature(hvac_mode=HVAC_MODE_AUTO)
 
     def _convert_to_degrees(self, points):
+        points = points or self._convert_to_points(20)
         return round(0.173166 * int(points) + 27.4256)
     
     def _convert_to_points(self, degrees):
